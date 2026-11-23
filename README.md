@@ -1,6 +1,6 @@
 # 幕布网页端平滑滚动/平滑缩放/自选字体 —— Edge 扩展
 
-当前版本：**v1.2.0**
+当前版本：**v1.2.1**
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-2EA44F?style=flat-square" alt="License: MIT" /></a>
@@ -13,11 +13,11 @@
 
 幕布网页端与 Win / macOS 桌面端的滚动、放缩动作偏卡顿，体验甚至不如 Android / iOS APP。
 
-扩展在浏览器层面为 mubu.com 补上「累加 + 缓动」的滚动 / 平移 / 缩放，并支持把界面字体换成**本机已安装的任意字体**。
+扩展在浏览器层面为 mubu.com / imubu.com 补上「累加 + 缓动」的滚动 / 平移 / 缩放，并支持把界面字体换成**本机已安装的任意字体**。
 
 ## 功能实现
 
-在 Edge 中打开 mubu.com（含所有子域名）时生效。
+在 Edge 中打开 mubu.com 或 imubu.com（含所有子域名）时生效。幕布已把主域名迁到 imubu.com，扩展同时匹配新旧域名。
 
 ### 1. 思维导图模式
 
@@ -55,8 +55,8 @@
 2. 打开 Edge，地址栏输入 `edge://extensions`
 3. 打开左下角的 **开发人员模式**
 4. 点击 **加载解压缩的扩展**
-5. 选择本仓库中的 **mubu-smooth-scroll-scale-extend-on-edge** 文件夹
-6. 打开或刷新 mubu.com 任意页面
+5. 选择本仓库中包含 `manifest.json` 的扩展文件夹
+6. 打开或刷新 mubu.com / imubu.com 任意页面
 7. 点击插件栏中出现的扩招图标 → 选择想要的字体
 
 说明：
@@ -65,6 +65,7 @@
   - `storage` —— 保存字体选择
   - `fontSettings` —— 读取已安装字体列表（Edge 会提示「读取和更改字体设置」，本扩展**只读取，不修改系统字体**）
 - 从旧版本升级：文件夹名与权限有变化，建议先在 `edge://extensions` **移除旧扩展**，再重新「加载解压缩的扩展」。
+- **v1.2.1 起 manifest 增加了 imubu.com 匹配**：升级后必须在 `edge://extensions` 对本扩展点一次「重新加载」，再刷新页面；否则仍在运行旧的匹配规则。
 
 ### 极客方案：Node.js 脚本（不装扩展，需保持脚本运行）
 
@@ -79,7 +80,7 @@ node mubu_smooth_scroll.mjs
 | 变量 | 含义 | 默认值 |
 | --- | --- | --- |
 | EDGE_PATH | msedge.exe 完整路径 | `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe` |
-| MUBU_URL | 打开地址 | `https://mubu.com/app` |
+| MUBU_URL | 打开地址 | `https://imubu.com/app` |
 | MUBU_PORT | 调试端口 | `9222` |
 | MUBU_FONT | 字体名称（设为空字符串 = 不修改字体） | `Noto Serif SC` |
 
@@ -139,14 +140,19 @@ node mubu_smooth_scroll.mjs
 
 **Q：思维导图没有变平滑？**
 
+- 确认地址是 `mubu.com` 或 `imubu.com`：幕布已把主域名迁到 imubu.com，v1.2.0 及更早版本只匹配 mubu.com，迁移后不会注入
+- 升级到 v1.2.1 后，在 `edge://extensions` 点一次「重新加载」，再刷新页面
 - 本扩展仅在指针位于思维导图画布（`.minder-container`）内时接管滚轮
 
 **Q：会影响其他网站吗？**
 
-- 不会，扩展只匹配 `https://mubu.com/*` 与 `https://*.mubu.com/*`
+- 不会，扩展只匹配以下 4 条规则中的域名：
+  - `https://mubu.com/*`、`https://*.mubu.com/*`
+  - `https://imubu.com/*`、`https://*.imubu.com/*`
 
 ## 更新记录
 
+- **v1.2.1**：适配幕布主域名迁移到 imubu.com —— `manifest.json` 两个内容脚本各增加 `https://imubu.com/*` 与 `https://*.imubu.com/*`（迁移后原匹配不再命中，字体与平滑会同时失效）；Node 脚本默认地址同步为 `https://imubu.com/app`
 - **v1.2.0**：字体改为可在弹窗内从**本机已安装字体**中选择；新增字体搜索 / 手动输入 / 常用字体；修复字体栈重复；Node 脚本新增 `MUBU_FONT`
 - **v1.0.0**：思维导图平移 / 缩放平滑化 / 默认全局字体为Noto Serif SC
 

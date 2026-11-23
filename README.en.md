@@ -8,7 +8,7 @@
 <p align="center">English · <a href="README.md">中文</a></p>
 
 Manifest V3 extension for Microsoft Edge (Chromium) that (a) replaces the discrete, per-event
-pan/zoom response of [mubu.com](https://mubu.com) with an eased, accumulative response, and
+pan/zoom response of [mubu.com](https://mubu.com) — now served from [imubu.com](https://imubu.com) — with an eased, accumulative response, and
 (b) applies a user-selected system font over both DOM text and canvas-rendered text.
 
 The implementation performs **no bundle patching, no request interception, and no network
@@ -49,7 +49,7 @@ for canvas text, which is the only reliable way to affect text that is rasterise
 | --- | --- | --- |
 | Wheel panning | Capture-phase listener → accumulator → eased synthetic `wheel` re-dispatch | Mind-map canvas (`.minder-container`) |
 | Wheel zooming (Ctrl/⌘) | Same pipeline, anchored at the pointer, with DPR-corrected coordinates | Mind-map canvas |
-| DOM font override | Injected `style` element, selector list `html, body, *`, `!important` | All DOM text and UI on `mubu.com` and subdomains |
+| DOM font override | Injected `style` element, selector list `html, body, *`, `!important` | All DOM text and UI on `mubu.com` and `imubu.com` (incl. subdomains) |
 | Canvas font override | `CanvasRenderingContext2D.prototype.font` accessor rewrite | Mind-map topic labels, canvas-rendered text |
 | Font selection | `chrome.fontSettings.getFontList()` + `chrome.storage.sync` | Extension popup |
 
@@ -62,7 +62,7 @@ for canvas text, which is the only reliable way to affect text that is rasterise
 | Browser | Edge 111 | Requires `"world": "MAIN"` content scripts (Chromium 111+) |
 | Platform | Windows / macOS / Linux | Any platform running Edge |
 | Node.js (script mode only) | 22 | Requires the global `WebSocket` binding and ESM support |
-| Target pages | `https://mubu.com/*`, `https://*.mubu.com/*` | Matched by both content-script entries |
+| Target pages | `https://mubu.com/*`, `https://*.mubu.com/*`, `https://imubu.com/*`, `https://*.imubu.com/*` | Matched by both content-script entries. The application migrated the document host from `mubu.com` to `imubu.com` and rewrites URLs accordingly (see §16). |
 
 Validated on Edge 157.0.4341.60 (Chromium 157), Windows, `devicePixelRatio = 1.25`,
 with approximately 229 installed font families enumerated.
@@ -75,8 +75,8 @@ with approximately 229 installed font families enumerated.
 
 1. Navigate to `edge://extensions`.
 2. Enable **Developer mode**.
-3. Select **Load unpacked** and choose the `mubu-smooth-scroll-scale-extend-on-edge` directory.
-4. Open or reload any page under `mubu.com`.
+3. Select **Load unpacked** and choose the repository directory that contains `manifest.json`.
+4. Open or reload any page under `mubu.com` or `imubu.com`.
 5. Click the toolbar icon to open the configuration popup.
 
 **Permissions requested**
@@ -103,7 +103,7 @@ patch via `Page.addScriptToEvaluateOnNewDocument`. The process must remain alive
 | Environment variable | Description | Default |
 | --- | --- | --- |
 | `EDGE_PATH` | Absolute path to `msedge.exe` | `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe` |
-| `MUBU_URL` | Initial URL | `https://mubu.com/app` |
+| `MUBU_URL` | Initial URL | `https://imubu.com/app` |
 | `MUBU_PORT` | DevTools protocol port | `9222` |
 | `MUBU_FONT` | Font family; empty string disables the override | `Noto Serif SC` |
 
@@ -113,7 +113,7 @@ patch via `Page.addScriptToEvaluateOnNewDocument`. The process must remain alive
 
 ### 5.1 Interaction model
 
-1. Open any page under `mubu.com`.
+1. Open any page under `mubu.com` or `imubu.com`.
 2. Click the extension icon. Pin it through the extensions (puzzle-piece) menu if it is hidden.
 3. Select a family from the list, or type one directly into the input field.
 4. Press **Save and Apply**.
@@ -153,7 +153,7 @@ The popup is localised in Chinese; the following table maps each label.
 | --- | --- | --- |
 | `chrome.storage.sync` | `fontFamily` | Authoritative selection. Absent means default `Noto Serif SC`; empty string disables the override. |
 | DOM attribute | `<html data-mubu-font-family>` | Cross-world transport, consumed by the main-world script. |
-| `localStorage` (origin `mubu.com`) | `__mubu_font_family` | Write-through cache enabling pre-paint application on reload. |
+| `localStorage` (site origin) | `__mubu_font_family` | Write-through cache enabling pre-paint application on reload. |
 
 ---
 
@@ -392,14 +392,14 @@ pass-through, so the override is reversible at runtime without reloading the ext
 - The only persisted state is the selected family name.
 - Main-world code touches two global surfaces: `CanvasRenderingContext2D.prototype.font` and a
   namespaced attribute on `document.documentElement`. Both are additive and reversible.
-- Host permissions are limited to `mubu.com` and its subdomains.
+- Host permissions are limited to `mubu.com` and `imubu.com` and their subdomains.
 
 ---
 
 ## 14. Repository Layout
 
 ```text
-mubu-smooth-scroll-scale-extend-on-edge/
+mubu.com-customization-extension/
 ├── manifest.json              MV3 declaration (permissions, two content scripts, popup)
 ├── content-bridge.js          isolated world: storage → DOM attribute → localStorage mirror
 ├── content.js                 main world: font overrides + smoothed pan/zoom
@@ -447,7 +447,7 @@ Regression checklist:
 
 | Version | Changes |
 | --- | --- |
-| **1.2.1** | Added a collapsible *How to use* section to the configuration panel. |
+| **1.2.1** | Domain migration: the document host moved from `mubu.com` to `imubu.com` (the application rewrites `mubu.com`/`www.mubu.com` to `imubu.com` and `share.mubu.com`/`mubucm.com` to `share.imubu.com`), so the previous match patterns never applied and neither content script was injected. Both `content_scripts` entries now match `https://imubu.com/*` and `https://*.imubu.com/*` in addition to the legacy patterns; script-mode default URL updated. |
 | **1.2.0** | Font selection from locally installed families; search, manual entry and frequently-used chips; duplicate-free fallback chain; `MUBU_FONT` for script mode; the outline scrolling override was removed (mind map only). |
 | **1.1.0** | Global font override covering DOM text and canvas text, defaulting to `Noto Serif SC`. |
 | **1.0.0** | Accumulative, eased mind-map panning and zooming. |

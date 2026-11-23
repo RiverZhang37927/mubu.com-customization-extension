@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "幕布增强：可选字体 + 平滑滚动/缩放",
-  "version": "1.2.0",
-  "description": "mubu.com 及其子域名：全局字体可从已安装字体中自选；思维导图平滑平移 / 平滑缩放。",
+  "version": "1.2.1",
+  "description": "mubu.com / imubu.com 及其子域名：全局字体可从已安装字体中自选；思维导图平滑平移 / 平滑缩放。",
   "permissions": [
     "storage",
     "fontSettings"
@@ -15,7 +15,9 @@
     {
       "matches": [
         "https://mubu.com/*",
-        "https://*.mubu.com/*"
+        "https://*.mubu.com/*",
+        "https://imubu.com/*",
+        "https://*.imubu.com/*"
       ],
       "js": [
         "content-bridge.js"
@@ -26,7 +28,9 @@
     {
       "matches": [
         "https://mubu.com/*",
-        "https://*.mubu.com/*"
+        "https://*.mubu.com/*",
+        "https://imubu.com/*",
+        "https://*.imubu.com/*"
       ],
       "js": [
         "content.js"

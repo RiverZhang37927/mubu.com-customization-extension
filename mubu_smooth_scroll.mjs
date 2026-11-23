@@ -11,7 +11,7 @@
 // 环境变量 / Env:
 //   EDGE_PATH    msedge.exe 路径 (默认 C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe)
 //   MUBU_PORT    调试端口 (默认 9222)
-//   MUBU_URL     打开地址 (默认 https://mubu.com/app)
+//   MUBU_URL     打开地址 (默认 https://imubu.com/app)
 //   MUBU_PROFILE Edge 用户数据目录 (默认 脚本目录/.edge-profile)
 //   MUBU_FONT    字体名称 (默认 Noto Serif SC；设为空字符串则不修改字体)
 
@@ -26,7 +26,7 @@ const PATCH = readFileSync(join(__dirname, 'smooth-scroll.patch.js'), 'utf8');
 const PORT = Number(process.env.MUBU_PORT || 9222);
 const EDGE = process.env.EDGE_PATH || 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const PROFILE = process.env.MUBU_PROFILE || join(__dirname, '.edge-profile');
-const TARGET_URL = process.env.MUBU_URL || 'https://mubu.com/app';
+const TARGET_URL = process.env.MUBU_URL || 'https://imubu.com/app';
 const FONT = process.env.MUBU_FONT === undefined ? 'Noto Serif SC' : process.env.MUBU_FONT;
 
 if (!existsSync(EDGE)) {
